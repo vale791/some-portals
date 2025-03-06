@@ -1,8 +1,9 @@
 #include "Portal.h"
+#include "Wall.h"
 #include "raylib.h"
+#include <vector>
 #include <iostream>
-#include <thread>
-#include <chrono>
+#include <cmath>
 
 constexpr int screenWidth = 600;
 constexpr int screenHeight = 600;
@@ -11,9 +12,12 @@ const char *winTitle = "Raylib Practice";
 
 bool currentPortal = true;
 Portal *portals[2] = {nullptr, nullptr};
+std::vector<Wall> walls;
 int portalsIndex = 0;
 
-constexpr Vector2 plrRectSize = {50, 50};
+constexpr Vector2 plrRectSize = {50.0f, 50.0f};
+constexpr Vector2 origin = { 25.0f, 25.0f };
+float angle = 90.0f;
 Rectangle plrRect = {screenWidth / 2 - plrRectSize.y / 2, screenHeight /2 - plrRectSize.y / 2, plrRectSize.x, plrRectSize.y};
 Vector2 posToPlacePortal;
 
@@ -35,20 +39,23 @@ int main() {
     // ---------------------------
     // movement
     if (IsKeyDown(KEY_A)) {
-      plrRect.x -= 3 * dt * 100;
+      angle -= 3 * dt * 100;
     }
 
     if (IsKeyDown(KEY_D)) {
-      plrRect.x += 3 * dt * 100;
-    }
-
-    if (IsKeyDown(KEY_S)) {
-      plrRect.y += 3 * dt * 100;
+      angle += 3 * dt * 100;
     }
 
     if (IsKeyDown(KEY_W)) {
-      plrRect.y -= 3 * dt * 100;
+      plrRect.x -= (3 * dt * 100) * (cos(angle * (PI / 180)));
+      plrRect.y -= (3 * dt * 100) * (sin(angle * (PI / 180)));
     }
+
+    if (IsKeyDown(KEY_S)) {
+      plrRect.x -= -1 * (3 * dt * 100) * (cos(angle * (PI / 180)));
+      plrRect.y -= -1 * (3 * dt * 100) * (sin(angle * (PI / 180)));
+    }
+
     // ---------------------------
 
     // ---------------------------
@@ -71,7 +78,7 @@ int main() {
     // ---------------------------
 
     // ---------------------------
-    // portal placement and remove
+    // portal & wall placement and remove
 
     if (portals[0] == nullptr) {
       portalsIndex = 0;
@@ -81,6 +88,8 @@ int main() {
 
     posToPlacePortal = { plrRect.x + plrRectSize.x / 2 - 15,
                         plrRect.y + plrRectSize.y / 2 - 15};
+
+    std::cout << plrRect.y << '\n';
 
     if (IsKeyPressed(KEY_Q)) {
 
@@ -109,6 +118,9 @@ int main() {
         portals[0] = nullptr;
       }
     }
+
+    if (IsKeyPressed(KEY_F)) {
+    }
     // ---------------------------
 
     checkForPlayerCollision();
@@ -133,11 +145,11 @@ void drawWindow() {
 
   ClearBackground(RAYWHITE);
 
-  DrawRectangleRec(plrRect, BLACK);
+  DrawRectanglePro(plrRect, origin, angle, BLACK);
 
   for (int i = 0; i < 2; ++i) {
     if (portals[i] != nullptr) {
-      DrawRectangleRec(portals[i]->getRectangle(), portals[i]->getColor());
+      portals[i]->draw();
     }
   }
 

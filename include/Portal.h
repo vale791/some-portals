@@ -19,6 +19,7 @@ public:
   bool isActivated();
   void deActivate();
   void activate();
+  void draw();
 
 private:
   Portal *m_counterPart;

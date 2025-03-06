@@ -11,10 +11,7 @@ void deActivateActivatePortal(Portal* p) {
 }
 
 Portal::Portal(Vector2 pos, Color portalColor, Portal *counterPart): m_position(pos), m_color(portalColor), m_counterPart(nullptr) {
-  m_rect.x = pos.x;
-  m_rect.y = pos.y;
-  m_rect.width = m_size.x;
-  m_rect.height = m_size.y;
+  m_rect = { m_position.x, m_position.y, m_size.x, m_size.y };
   if (counterPart != nullptr) {
     bind(counterPart);
   }
@@ -73,4 +70,8 @@ Color Portal::getColor() {
 
 Rectangle Portal::getRectangle() {
   return m_rect;
+}
+
+void Portal::draw() {
+  DrawRectangleRec(m_rect, m_color);
 }
